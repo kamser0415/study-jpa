@@ -1,4 +1,4 @@
 # 스프링 부트 JPA 스터디
 ## 실전! 스프링 부트와 JPA 활용1
 #### 1일차
-참조 이름 작성 문법 : [참조 이름]: active-1/domain-development.md
++ [회원 도메인까지](https://github.com/kamser0415/study-jpa/blob/main/active-1/domain-development.md)
