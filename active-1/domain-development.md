@@ -103,7 +103,7 @@ logging.level:
 
 
 # 도메인 모델과 테이블 설계
-<center><img src = "../Image/domain.jpg" width = "700" height = "100%"></center>   
+<img src = "Image/domain.jpg" width = "700" height = "100%"></center>   
 
 #### _관계_ 
 **회원,주문,상품의 관계**: 
@@ -118,7 +118,7 @@ logging.level:
 + 테이블에는 상속 개념이 없기 때문에 공통 속성을 어떻게 관리할지 고민해봐야한다.    
 
 ## 회원 엔티티 분석
-<center><img src = "../Image/table.jpg" width = "700" height = "100%"></center>   
+<div style="text-align: center;"><img src = "Image/table.jpg" width = "700" height = "100%"></div>   
 
 ### 회원(Member)    
 이름과 임베디드 타입인 주소(Address),주문(orders) 리스트를 가진다.  
@@ -511,7 +511,7 @@ spring:
   + 주문취소  
 
 ### 애플리케이션 아키텍처
-<center><img src = "../Image/architecture.jpg" width = "700" height = "100%"></center>
+<div style="text-align: center;"><img src = "Image/architecture.jpg" width = "700" height = "100%"></div>
 
 #### 계층형구조 사용
 + controller, web: 웹계층
