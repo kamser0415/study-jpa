@@ -72,7 +72,7 @@ public static Order createOrder(Member member,Delivery delvery,OrderItem... orde
 ```java
 new Member(String firstName,String lastName){}
 public Member Member.create(String firstName,String lastName){}
-String firstName = "";
+String firstName = "존";
 String lastName = "박";
 new Member(lastName,firstName);
 Member.create(lastName,firstName);
