@@ -111,12 +111,12 @@ Order 테이블은 **전체 주문 금액을 저장하는 칼럼**이 없습니�
 차라리 전체 주문 금액을 저장하는 칼럼을 만들고,주문이 생성되면 처음 초기화 할 때  
 저장한다면 비즈니스 로직을 수행할 필요가 없다고 생각해서 **추가했습니다.**  
 > totalPrice과 같은 파생 칼럼 사용시 주의점  
-> 반면 주문상품의 내용이 변경이 많다면 주문상품이 바뀔때  
+> 주문상품 최종 금액의 내용이 변경이 많다면 주문상품이 바뀔때  
 > totalPrice를 새로 계산해서 입력하는 과정이 오히려 리소스를 더 차지할 수도 있습니다.   
 > 또, 파생속성이 데이터 무결성을 위반할 여지를 남겨두는 일이라며 사용하지 말아야 한다고  
 > 주장하시는 개발자분도 있습니다.  
  
-상황에 따라 알맞는 방법을 선택하면 됩니다.  
+상황에 따라 알맞는 방법을 선택을 하면 됩니다.  
 
 ### 주문 상품 엔티티 설계  
 
@@ -186,7 +186,7 @@ public class OrderItem {
    ```java
    item.removeStock(count);
    ```
-3. 주문 가격 조회 : this.orderPrice * this.count 하지 않은 이유가 뭘까?
+3. 주문 가격 조회
    ```java
    //== 조회 로직 ==//
     public int getTotalPrice() {
@@ -197,15 +197,18 @@ public class OrderItem {
         return this.orderPrice * this.count;
     }
    ``` 
-   객체 외부에서는 당연히 필드에 직접 접근하면 안되겠지만, 객체 내부에서는 필드에 직접 접근해도 아무런 문제는 없다.  
-   번거롭게 getXxx를 호출하는 것 보다는 필드를 직접 호출하는 것이 코드도 깔끔하다  
-    그런데 객체 내부에서 필드에 직접 접근하는 가,아니면 getter를 통해서 접근하는가가 JPA 프록시를  
-    많이 다루게 되면 중요해진다. 일반적으로 이런 상황을 겪을 일이 거의 없지만,  
-    조회한 프록시가 프록시 객체인 경우 필드에 직접 접근하면 원본 객체를 가져오지 못하고 프록시 객체의 필드에 직접 접근하게 된다.  
-    equals,hashcode를 JPA 프록시 객체로 구현할 때 문제가 발생할 수 있다.  
-    
-    프록시 객체의 equals를 호출했는데 필드에 직접 접근하면, 프록시 객체는 필드에 값이 없으므로  
-    항상 null이 된디.
+### this.orderPrice * this.count 하지 않은 이유가 뭘까?   
++ 객체 외부에서는 당연히 필드에 직접 접근하면 안된다.
++ **객체 내부**에서는 필드에 직접 접근해도 아무런 **문제는 없다.**  
+번거롭게 getXxx를 호출하는 것 보다는 필드를 직접 호출하는 것이 코드도 깔끔하다  
+그런데 객체 내부에서 필드에 직접 접근하는 가,아니면 getter를 통해서 접근하는가가  
+JPA 프록시를 많이 다루게 되면 중요해진다. 일반적으로 이런 상황을 겪을 일이 거의 없지만,  
+조회한 프록시가 프록시 객체인 경우 필드에 직접 접근하면  
+원본 객체를 가져오지 못하고 프록시 객체의 필드에 직접 접근하게 된다.  
+equals,hashcode를 JPA 프록시 객체로 구현할 때 문제가 발생할 수 있다.  
+
+<div style="text-align: center;">프록시 객체의 equals를 호출했는데 필드에 직접 접근하면,</br>
+프록시 객체는 필드에 값이 없으므로 항상 null이 된디.</div>
 
 ### 주문 리포지토리 코드
 ```java
@@ -303,7 +306,7 @@ public class OrderService {
 }
 ```
 + 주문 (order()):  
-    Cascade.All 을 활용하여 엔티티를 매번 저장하지 않고, 최종 Order 엔티티만 저장하면  
+    Cascade.All 을 활용하여 엔티티를 저장하지 않고, 최종 Order 엔티티만 저장하면  
     나머지 엔티티도 자동으로 DB에 반영이 된다.
 + 주문 취소(cancel()):  
     주문 식별자와 주문 엔티티를 조회하고 주문 엔티티에 취소요청을 보낸다.
@@ -319,7 +322,8 @@ public class OrderService {
         private final RepositoryA repositoryA;
         private final RepositoryB repositoryB
         private final RepositoryC repositoryC;
-  
+        
+        @Transactional(readonly=false)
         public functionA(){
             A a = repositoryA.find();
             B b = repositoryB.find();
@@ -338,7 +342,7 @@ public class OrderService {
     @RequiredArgsConstructor
     @Transactional(readonly=true)
     class DomainService {
-  
+    
         private final RepositoryA repositoryA;
         private final RepositoryB repositoryB;
         private final RepositoryC repositoryC;
@@ -347,7 +351,7 @@ public class OrderService {
             A a = repositoryA.find();
             B b = repositoryB.find();
             C c = repositoryC.find();
-  
+            //도메인 객체 모델
             a.funcationA(b,c);
             repositoryA.save(a);
         } 
