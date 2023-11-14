@@ -412,15 +412,20 @@ public class OrderService {
 ### 트랜잭션 스크립트 패턴과 도메인 패턴 정리  
 트랜잭션 스크립트 패턴의 장점은 빠른 개발이 가능하다.  
 하나의 계층에 해당 비즈니스에 대한 로직을 처리하기 때문에 비즈니스가 복잡해질 경우  
-비즈니스 로직도 같이 복잡해지고, 해당 계층이 두꺼워지면 유지보수하기도 어렵다.  
-  
+비즈니스 로직도 같이 복잡해지고, 해당 계층이 두꺼워지면 유지보수하기도 어렵다.
+
 도메인 패턴의 장점은 객체 지향을 기반하기 때문에  
 해당 도메인을 재사용하고, 유지보수하기가 편하기 때문에 확장성에 좋다.  
 다만, 모메인 모델을 구축하는데 많은 노력이 필요하다.  
 
 테스트 코드에서도 차이점이 나타나는데  
 도메인 패턴일 경우에는 불필요한 의존성이나 외부 네트워크를 사용하지 않기 때문에    
-속도도 빠르다,  
+속도도 빠릅니다.  
+
+### 트랜잭션 스크립트에서 도메인 패턴으로  
+처음부터 도메인 패턴으로 작성하는 것보다 트랜잭션 스크립트 유형으로 코드를 작성하고  
+전체 구조가 어느정도 윤곽이 잡힐 경우에 도메인에게 비즈니스 로직을 넣을 때  
+필요한 의존성도 파악하기 쉽다고 생각이 듭니다.
 
 ### JPA Cascade 주의사항
 ```java
@@ -431,24 +436,47 @@ private List<OrderItem> orderItems = new ArrayList<>();
 @JoinColumn(name = "delivery_id")
 private Delivery delivery;
 ```
-1. 동일한 라이플 사이클을 가진 엔티티 관계 Order, OrderItem
-2. 엔티티가 하나만 연관관계를 맺을때 Order   
-Delivery 처럼 Order는 Delivery만 사용하고 관리하는게 편하다.
-3. 다른 것이 참조할수 없는 프라이빗 Onwer인 경우에 사용을 한다.
+1. 동일한 라이플 사이클을 가진 엔티티 관계(Order, OrderItem)여야 합니다.
+2. 엔티티가 하나만 연관관계를 맺을때 Order,Delivery 처럼  
+   Order는 Delivery만 사용하고 관리하는게 편하다.
+3. 다른 것이 참조할수 없는 `private` Onwer인 경우에 사용을 한다.
 
--- 처음에는 사용할 범위를 생각하기 어렵다면 사용하지 않고 코드를 작성한다.  
+-- 처음에는 사용할 `Cascade범위`를 생각하기 어렵다면 사용하지 않고 코드를 작성한다.  
 -- 이후에 어느정도 엔티티의 라이프사이클이 생긴다면 그때 cascadeType을 지정해도 된다.
 
-#### 1.SQL Mapper로 JPA cascade를 구현한다면
-```sql
--- MyBatis
-INSERT INTO parent_table(name, nikname) VALUE ('배달음식','희동');
-INSERT INTO child_table (name, nikname, parent_id) VALUES ('삼겹살','하남돼지',last_insert_id());
-INSERT INTO child_table (name, nikname, parent_id) VALUES ('피자','도미노',last_insert_id());
-INSERT INTO child_table (name, nikname, parent_id) VALUES ('돈까스','백설',last_insert_id());
+#### 1.JPA cascade기능을 SqlMapper로 구현한다면  
+```java
+Parent parent = new Parent("배달음식","희동");
+Child hanam = new Child("삼겹살","하남돼지");
+Child domino = new Child("피자","도미노");
+Child cj = new Child("돈까스","백설");
+parent.addMenu(listOf(hanam,domino,cj));
+em.persist(parent);
+```  
+JPA로 작성한 코드를 간단하게 SqlMapper로 작성한다면 아래와 유사할겁니다.
+```xml
+-- MyBatis xml
+<insert id="addParent" parameterType="Parent" useGeneratedKeys="true" keyProperty="parentKey">
+    INSERT INTO parent_table(name, nikname) VALUES (#{parent.food}, #{parent.username})
+</insert>
+<insert id="addChild" parameterType="hashmap">
+    INSERT INTO child_table (name, nikname, parent_id) VALUES (#{child.category},#{parentSeq});
+</insert>
 ``` 
-여기에 `<foreach>`를 사용하면 더 빠르다.  
-JPA는 옵션에 Cascade옵션만 사용할 뿐인데 위 SQL를 추가로 작성하지 않아도 된다.  
+```java
+private final ParentMapper parentMapper;
+private final ChildMapper childMapper;
+@Transactional
+public void addMenu(Parent parent,List<Child> childList) {
+    Long parentId= parentMapper.addParent(parent);
+    for(int i = 0 ; i<childList.length; i++){
+        childMapper.addChild(childList[i],parentId);
+    }
+}
+
+```
+여기에 `<foreach>`기능을 사용한다면 더 간단하게 작성할 수 있습니다,
+핵심은 JPA는 상황에 따라 옵션에 Cascade옵션을 추가한다면  
 불필요한 SQL를 작성하지 않고, 그리고 참조하는 순서도 JPA가 알아서 DB에 넣어준다.
 
 ## 테스트  
@@ -542,20 +570,33 @@ class OrderServiceTest {
 }
 ```
 ### Controller 계층에서 Entity의 사용은?
-1. 화면을 그리는데 필요한 템플릿용 데이터와 데이터를 저장하는 Entity는 구분해서 사용한다.  
-   프로젝트가 확장되고 여러 장소에서 Entity를 사용한다면 유지보수가 어렵고  
-   엔티티를 수정했다가 화면에 올바르지 않는 데이터가 나온다거나  
-   화면을 그리기 위해서 엔티티를 수정하면 데이터를 저장하는 정보가 원지않게 변경될 수 있다  
-2. 준영속 상태에서 파라미터로 넘긴 엔티티는 데이터를 전달하는 vo밖에 안되고    
-   Member member = em.merge(Member memberFake)에 넘긴다  
-   memberFake는 그냥 vo밖에 안되서 영속성으로 관리가 되지 않는다.  
-   반환값으로 나온 member는 영속성으로 관리가 되어진다.  
+1. 화면을 그리는데 필요한 템플릿용 DTO(혹은 Model)과 데이터를 저장하는 Entity는 구분해서 사용한다.  
+    이유는 DTO 역할을 하기위한 `@Valid` 어노테이션과 Entity 역할을 하기위한 `@Entity` 애노테이션이 하나의 클래스에 있다면   
+   엔티티 역할을 고치기 위해서 수정했다가 화면에 올바르지 않는 데이터가 나온다거나    
+   반대로 화면을 그리기 위해서 DTO 역할을 수정하면 데이터를 저장하는 정보가 원지않게 변경될 수 있다  
+2. 준영속 상태에서 파라미터로 넘긴 엔티티는 데이터를 전달하는 VO(`불변 객체`)의 역할이고    
+   데이터를 저장한다면  내부 로직은 em.merge(Member memberFake)가 실행이 된다.  
+   변경 감지 기능을 사용하면 원하는 속성만 선택해서 변경할수 있지만, 병합을 사용하면 모든속성이 변경된다.  
+   병합시 값이 없으면 `null`로 업데이트 할위험도 있다. (병합은모든필드를 교체한다.)  
 3. 변경 감지이용시 set은 안된다.  
    해당 변경이 무슨 이유 때문에 수정되는지 알 수있는 메서드 명으로 변경해야한다.  
    예) member.setName(),set.age() -> member.updateInfomation() 이런 느낌  
     + 역 추적이 가능하다.  
 
 4. 어설프게 DTO를 바로 객체에 전달하지 않고,  
-   필요한 데이터만 가지고 서비스 계층에 넘길수 있도록해야한다.유지보수도 간단해지고, 명확해진다.  
+   필요한 데이터만 가지고 서비스 계층에 넘길수 있도록해야한다.유지보수도 간단해지고, 명확해진다.
+    ```java
+    //controller
+    public void addMember(@RequestBody CreateRequestMember createMember){
+        memberService.saveMember(createMember.toServiceRequest())
+    }
+    //CreateRequestMember
+    public class CreateRequestMember {
+        //..생략
+        MemberCreateServiceRequest toServiceRequest(){
+            // 필요한 정보만 가지고 서비스용 DTO를 만든다.
+        }        
+    }
+    ```
 
 
