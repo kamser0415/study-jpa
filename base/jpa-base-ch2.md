@@ -203,14 +203,18 @@ public class Test {
 <div style="text-align: center;"><img src = "./image/factory.png" width = "600" height = "100%"></div>  
 
 #### 엔티티 매니저 팩토리 생성
-1. persistence.xml 설정 정보를 사용해서 엔티티 매니저 팩토리를 생성한다.  
+persistence.xml 설정 정보를 사용해서 엔티티 매니저 팩토리를 생성한다.  
 `EntityManagerFactory emf = Persistence.createEntityManagerFactory("hello");`  
 이렇게 하면 META-INF/persistence.xml에서 이름이 `hello`인 영속성 유닛의 설정 정보를 읽어서  
 JPA를 동작시키기 위한 기반 객체를 만들고 JPA 구현체에 따라서는 데이터베이스 커넥션 풀도 생성한다  
 엔티티 매니저 팩토리를 생성하는 비용은 아주 크다.  
-따라서 엔티티 매니저 팩토리는 애플리케이션 전체에서 한 번만 생성하고 공유해서 사용해야 한다.
-    + 엔티티 매니저 팩토리는 여러 쓰레드가 동시에 접근해도 안전하다.
-    + 서로 다른 스레드 간에 공유가 가능하다.
+따라서 엔티티 매니저 팩토리는 애플리케이션 전체에서 한 번만 생성하고 공유해서 사용해야 한다.  
+
+ + 엔티티 매니저 팩토리는 여러 쓰레드가 동시에 접근해도 안전하다.   
+ + 서로 다른 스레드 간에 공유가 가능하다.  
+    
+
+
 #### 엔티티 매니저 생성  
 `EntityManager em = emf.createEntityManager();`  
 엔티티 매니저 팩토리에서 엔티티 매니저를 생성한다. JPA의 기능 대부분은 엔티티 매니저가 제공한다.  
