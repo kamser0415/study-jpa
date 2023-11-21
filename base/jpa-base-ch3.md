@@ -5,19 +5,19 @@ JPA(Java Persistence API)
 영속성 : 서버가 재시작되어도 데이터는 영구적으로 저장되는 속성  
 자바 진영의 ORM(Object-Relational Mapping)  
 *__API: 정해진 규칙(약속)__*   
-데이터를 영구적으로 보관하기 위해 Java 진영에서 정해진 규칙  
+**데이터를 영구적으로 보관하기 위해 Java 진영에서 정해진 규칙**입니다. 
 
 #### JPA 정리
 ```text
-객체와 관계형 DB의 테이블을 짝지어
+자바 객체와 관계형 DB의 테이블을 짝지어
 데이터를 영구적으로 저장할 수 있도록 정해진 Java 진영의 규칙
 ```
 JPA는 API를 사용할 때 Mapping된 SQL을 DB에 전달하기 전에 성능과 기능을 제공하기 위해  
-`영속성 컨텍스트(persistence context)`에서 보관하고 관리한다.  
+`영속성 컨텍스트(persistence context)`에서 보관하고 관리한다.
 ```text
 JPA(Hibernate) -> 영속성 컨택스트 -> SQL -> DB
 DB(MySQL)-> InnoDB(버퍼풀-메모리) -> Disk
-영속성 컨택스트는 InnoDB의 버퍼풀과 유사한 역할을 하고 있다.
+MySQL의 버퍼풀 처럼 메모리 영역으로 객체와 인덱스를 캐시하는 영역이라는 유사한 공통점이 있습니다.  
 ```  
 ## 영속성 컨택스트란  
 엔티티(객체와 테이블을 매핑한 결과)를 `영구 저장하는 환경`이라는 뜻이다.  
@@ -40,92 +40,115 @@ JPA와 DB에 전혀 관련이 없는 순수 자바 객체(오브젝트)다
 //객체를 생성한 상태
 Member member = new Member(1L,"둘리");
 ```
-<img src = "./image/new.png" width = "400" height = "100%"/>  
+<img src = "./image/new.png" width = "400" height = "100%"/>    
+
+<br/>  
 
 ### 영속  
 엔티티 매니저를 통해 엔티티를 영속성 컨텍스트에 저장한다.  
 영속성 컨텍스트가 관리하는 엔티티를 **영속 상태**라 한다.  
 `em.find()나 JPQL을 사용해서 조회한 엔티티도 관리하는 영속 상태다.`
 <img src = "./image/managed.png" width = "400" height = "100%"/>  
-엔티티 매니저는 순수 자바 객체를 감시 지역에 옴겨놓는 역할이라 생각하면 된다.  
+엔티티 매니저는 순수 자바 객체를 감시 지역에 옴겨놓는 역할이라 생각하면 된다.   
+  
+<br/>  
 
 ### 준영속  
 영속성 컨텍스트가 관리하던 영속 상태의 엔티티를 영속성 컨텍스트가 관리하는 영역을 벗어난 상태  
 특정 엔티티를 준영속 상태로 만들려면 `em.detach()`를 호출하면 된다.  
 또는 `em.close()`를 호출해서 영속성 컨택스트를 닫거나 ,`em.clear()`를 호출해서 영속성 컨택스트를 초기화해도  
-영속성 컨텍스트가 관리하던 영속 상태의 엔티티는 준영속 상태가 된다.
+영속성 컨텍스트가 관리하던 영속 상태의 엔티티는 준영속 상태가 된다.  
+
 ### 삭제  
 엔티티를 영속성 컨텍스트와 데이터베이스에서 삭제한다.  
 > JPA 설명은 영속성 컨텍스트에서 삭제한다는데 정말 삭제될까?  
 > 해당 매서드를 사용하면 바로 영속성 컨텍스트에서 삭제된지 확인해 보았습니다.
 ```java
-import org.example.MemberTest;
+@DisplayName("엔티티 삭제후 1차 캐시에서 정말 삭제가 될까?")
+@Test
+void removeTest(){
+    //given
+    EntityManagerFactory emf = Persistence.createEntityManagerFactory("hello");
+    EntityManager em = emf.createEntityManager();
+    EntityTransaction tx = em.getTransaction();
+    tx.begin();
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.EntityTransaction;
-import javax.persistence.Persistence;
+    Member member = new Member();
+    member.setUsername("둘리");
+    em.persist(member);
 
-public class Test {
+    em.flush();
+    em.clear();
 
-    public static void main(String[] args) {
-
-        EntityManagerFactory emf = Persistence.createEntityManagerFactory("hello");
-        EntityManager em = emf.createEntityManager();
-
-        EntityTransaction tx = em.getTransaction();
-        tx.begin();
-        try {
-            // 멤버 저장
-            MemberTest hoit = new MemberTest("둘리");
-            em.persist(hoit);
-            em.flush();
-            em.clear();
-            System.out.println(String.format("저장된 멤버의 이름은 %s입니다.",hoit.getName()));
-            
-            MemberTest removedMember = em.find(MemberTest.class, hoit.getId());
-            em.remove(removedMember);
-            System.out.println(String.format("삭제된 멤버의 이름은 %s입니다.",removedMember.getName()));
-//            em.detach(removedMember); 옵션  
-
-            tx.commit();
-        } catch (Exception e) {
-            System.out.println("에러 발생");
-
-            tx.rollback();
-        } finally {
-            em.close();
-        }
-        //code
-        emf.close();
-    }
+    Member findMember = em.find(Member.class, member.getId());
+    em.remove(findMember);
+//  em.detach(findMember);
+    
+    Member removedMember = em.find(Member.class, member.getId());
+    System.out.println("=============== ");
+    Assertions.assertEquals(findMember.getUsername(),"둘리");
+    Assertions.assertEquals(removedMember,null);
+    System.out.println("=============== ");
+    
+    tx.commit();
 }
 ```
-```java
-//1. em.detach(removedMember); 가 없을 경우
-삭제된 멤버의 이름은 둘리입니다.
-        Hibernate:
-        /* delete org.example.MemberTest */ delete
+```sql
+-- remove select 쿼리가 1번 실행된다.
+Hibernate:
+        select
+        member0_.member_id as member_i1_1_0_,
+        member0_.team_id as team_id3_1_0_,
+        member0_.username as username2_1_0_
         from
-        MemberTest
+        Member member0_
         where
-        id=?
-//2. em.detach(removedMember); 가 있을 경우
-삭제된 멤버의 이름은 둘리입니다.
+        member0_.member_id=?
+        ===============
+        ===============
+Hibernate:
+        /* delete jpabook.Member */ delete
+        from Member
+        where member_id=?
+-- detach : select 쿼리가 2번 실행된다.
+Hibernate:
+    select
+        member0_.member_id as member_i1_1_0_,
+        member0_.team_id as team_id3_1_0_,
+        member0_.username as username2_1_0_
+    from
+        Member member0_
+    where
+        member0_.member_id=?
+Hibernate:
+    select
+        member0_.member_id as member_i1_1_0_,
+        member0_.team_id as team_id3_1_0_,
+        member0_.username as username2_1_0_
+    from
+        Member member0_
+    where
+        member0_.member_id=?
+        =============== 
+        ===============
 ```
-+ remove 역시 다른 엔티티 매니저 매서드와 동일하다.  
-영속성 컨텍스트에 삭제 마킹만 하고 영속성 컨텍스트에는 남아 있다.  
-+ `EntityManager.flush();`를 사용하기 전까지 영속성 컨텍스트 관리 대상에서 제외하거나  
-다시 persist()를 사용하면 delete쿼리가 나가지 않는다.  
++ remove() 는 일시적으로 영속성 컨텍스트에 삭제 마킹을 합니다.  
+    만약 영속성 컨택스트에서 삭제가 되었다면 select 쿼리가 2번 실행이되어야 하지만
+    1번만 실행이 되고 `find`로 remove된 엔티티를 찾아보면 Entity는 `null`이라고 나옵니다. 
++ remove() 역시 persist()와 동일하게 영속성 컨택스트에 관리가 되어지고,  
+    트랜잭션 커밋이나 flush()가 되어야 SQL이 실행됩니다.  
 
 ## 영속성 컨텍스트의 특징
 #### 영속성 컨텍스트와 식별자 값  
-영속성 컨텍스트는 엔티티를 식별자 값(`@Id로 테이블의 기본 키와 매핑한 값`)으로 구분한다.  
+영속성 컨텍스트는 엔티티를 식별자 값(`@Id로 테이블의 기본 키와 매핑한 값`)으로 관리한다.  
 따라서 **영속  상태는 식별자 값이 반드시 있어야 한다.** 식별자 값이 없으면 예외가 발생한다.  
+
 #### 영속성 컨텍스트와 데이터베이스 저장  
 영속성 컨텍스트에 엔티티를 저장하면 이 엔티티는 보통 트랜잭션을 커밋하는 순간 데이터베이스와 동기화를 한다.  
 이것을 `flush()`라 한다.  
-#### 영속성 컨텍스르가 엔티티를 관리할 경우 장점  
+
+
+#### 영속성 컨텍스트가 엔티티를 관리할 경우 장점  
 + 1차 캐시 -> 객체지향적인 이점이 발생
 + 동일성 보장 -> 데이터 베이스 격리수준 (Repeatable Read)를 어플리케이션 레벨에서 보장한다.  
 + 트랜잭션을 지원하는 쓰기 지원
@@ -134,13 +157,13 @@ public class Test {
 
 ### 엔티티 조회
 영속성 컨텍스트는 내부에 캐시가 있는데, 이것을 1차 캐시라 한다.  
-영속 상태의 엔티티는 모두 이곳에 저장된다. 영속성 컨텍스트 내부에 Map이 하나 있다.
+영속 상태의 엔티티는 모두 이곳에 저장된다. 영속성 컨텍스트 내부에 Map이 하나 있다.  
 키는 @Id로 매핑한 클래스이고, 값은 엔티티 인스턴스다.
-<img src = "./image/cache.png" width = "500" height = "100%"/>  
+<img src = "./image/em-find.png" width = "500" height = "100%"/>  
 1. `em.find(Member.class,"member2")`를 생성
-2. member2가 1차 캐시에 없을 경우 데이터베이스에서 조회한다.
-3. 조회한 데이터로 member2 엔티티를 생성하여 1차 캐시에 저장한다(영속 상태)
-4. 조회한 엔티티를 반환한다.
+2. `member2`가 1차 캐시에 없을 경우 데이터베이스에서 조회한다.
+3. 조회한 데이터로 `member2` 엔티티를 생성하여 1차 캐시에 저장한다(영속 상태)
+4. 1차 캐시에 저장한 엔티티를 반환한다.
 
 ### 영속 엔티티의 동일성 보장
 영속성 컨텍스트는 성능상 이점과 엔티티의 동일성을 보장한다.  
@@ -195,6 +218,7 @@ Member 테이블의 모든 칼럼을 가져와서 조건이 걸린 데이터만 
 3. 변경된 엔티티는 수정 SQL을 만들고 쓰기 지연 저장소에 저장한다.
 4. 쓰기 지연 SQL 저장소의 쿼리를 데이터베이스에 전송한다.(등록,수정,삭제 쿼리)  
 
+
 ### 영속성 컨텍스트를 플러시하는 방법 3가지
 1. em.flush()를 **직접호출**
 2. 트랜잭션 커밋 시 플러시가 자동 호출된다.
@@ -245,3 +269,27 @@ git에서 add 후 commit을 하면 저장 파일이 commit한 파일로 변경�
     지연 로딩(Lazy Loading)은 실체 객체대신 프록시 객체를 로딩해두고 해당 객체를  
     실제 사용할 때 영속성 컨텍스트를 통해 데이터를 불러오는 방법이다.  
     하지만 준영속 상태는 영속성 컨택스트가 관리하지 않기 때문에 지연 로딩 시 문제가 발생한다.  
+
+### 영속성 컨텍스트 명령어 정리
+| 메소드 이름 및 매개변수   | 효과                                                                                          |
+|-----------------|---------------------------------------------------------------------------------------------|
+| persist(Object) | 임시 객체를 영구 객체로 만들고 나중에 실행할 SQL 문을 예약합니다.                                                     |
+| remove(Object)  | 영속 객체를 일시적으로 만들고 삭제할 SQL 문을 나중에 예약합니다.                                                      |
+| merge(Object)   | 분리된 객체의 상태를 관리되는 영구 인스턴스에 복사하고 영구 객체를 반환합니다.                                                |
+| detach(Object)  | 데이터베이스에 영향을 주지 않고 세션에서 영구 객체 연결을 해제합니다.                                                     |
+| clear()         | 지속성 컨텍스트를 비우고 모든 엔터티를 분리합니다.                                                                |
+| flush()         | 세션과 연관된 영구 객체에 대한 변경 사항을 감지하고, SQL insert, update, delete 문을 실행하여 데이터베이스 상태를 세션 상태와 동기화합니다. |  
+  
+
+### 데이터베이스 예외가 발생할 경우
+
+"이러한 작업 중 어떤 것이든 예외를 발생시킬 수 있습니다.  
+따라서 데이터베이스와 상호 작용하는 동안 예외가 발생하면,  
+현재 영속성 컨텍스트(persistence context)의 상태를 데이터베이스 테이블에 저장된 상태와 동기화하는 좋은 방법이 없습니다.
+
+그러므로 세션(엔티티매니저)은 그 어떤 메서드가 예외를 발생시킨 후에도 _**사용할 수 없는 상태로 간주**_ 됩니다.  
+
+지속성 컨텍스트는 취약합니다. Hibernate에서 예외를 받으면 즉시 현재 세션을 닫고 폐기해야 합니다.   
+필요하다면 새로운 세션을 열지만, 먼저 문제가 있는 세션을 버려야 합니다."  
+  
+_**즉 예외가 발생하면, 세션(엔티티매니저)를 빠르게 종료시키고 필요시 새 엔티티 매니저를 사용합니다.**_
