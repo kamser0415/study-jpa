@@ -3,10 +3,8 @@
 ```java
 @Entity
 public class Member {
-
     @Id
     private Long id;
-
 }
 ```  
 
@@ -31,14 +29,14 @@ private Long id;
 ### IDENTITY 전략 - 특징  
 + 기본 키 생성을 데이터베이스에 위임
 + 주로 MySQL, PostgreSQL, SQL Server, DB2에서 사용 (예: MySQL의 auto_increment)
-+ JPA는 보통 트랜잭션 커밋 시점에 INSERT SQL 실행
++ JPA는 보통 트랜잭션 커밋 시점(`em.flush()`)에 INSERT SQL 실행
 + AUTO_ INCREMENT는 데이터베이스에 INSERT SQL을 실행한 이후에 ID 값을 알 수 있음
 + IDENTITY 전략은 em.persist() 시점에 **즉시 INSERT SQL 실행**하고 DB에서 식별자를 조회  
 ```SQL
 -- ORACLE
-id number(19,0) generated as identity,
+id number(19,0) generated as identity
 -- MYSQL
-id bigint not null auto_increment,
+id bigint not null auto_increment
 ```  
   
 ### SEQUENCE - 전략 - 특징  
@@ -122,7 +120,7 @@ public class Member {
 Hibernate: create sequence MEMBER_SEQ start with 1 increment by 1
 ```  
 + 직접 생성한 시퀀스를 사용할 수도 있습니다. 지금은 AutoDDL에서 자동으로 만들었습니다.  
-만약 `ddl=none`이고, 시퀀스가 존재하지 않는다면 오류가 발생합니다.  
+만약 AutoDDL 옵션이`none`이고, `MEMBER_SEQ`의 이름의 시퀀스가 존재하지 않는다면 오류가 발생합니다.  
 ```java
 Hibernate: 
     call next value for MEMBER_SEQ
@@ -155,7 +153,8 @@ tx.commit();
 `em.persist()`가 호출될 때마다 DB내 시퀀스 객체에 I/O가 발생합니다.  
 시퀀스를 만들때 설정 값으로 시작할 숫자, 호출마다 건너뛸 숫자크기를 지정합니다.  
 `initialValue = 1,allocationSize = 50`라고 설정하고   
-현재 MEMBER_SEQ_A 값은 1입니다.  
+처음 호출하면 현재 MEMBER_SEQ_A 값은 1입니다.  
+이때 처음 호출된 시퀸스 값이 1일경우 시퀀스를 2번호출합니다. 
 
 #### call next value for Sequence 2번 호출하는 이유  
 조건
