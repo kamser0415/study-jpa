@@ -22,7 +22,7 @@ public class Orders {
   @Column(name = "member_id")
   private Long memberId;
   
-  //..getter / setter
+  //getter,setter
 }
 ```
 ```sql
@@ -35,16 +35,15 @@ create table Orders (
 하지만 객체에서 참조 대신에 데이터베이스의 외래 키를 그대로 가지고 있으므로  
 `orders.getMember()` 처럼 객체 그래프를 탐색할 수 없고 객체의 특성도 살릴 수 없습니다.  
 객체가 다른 객체를 참조하지도 않으므로 UML(클래스 다이어그램)도 잘못되었습니다.  
-객체는 `왜래 키` 대신에 `참조`를 사용해야 합니다.  
+객체는 `왜래 키`를 저장하는 필드 대신에 객체 `참조`를 사용해야 합니다.  
   
 JPA를 사용하는 이유는 객체 지향적인 설계를 통해 엔티티끼리 협력을 통해서  
 역할을 분담을 통한 유지보수를 쉽게하려는게 목적입니다.  
 그러면 역할을 분담하는게 왜 좋을까요?  
 1. 유지보수가 간단해 집니다.  
-   트랜잭션 스크립트 패턴처럼 절차지향적으로 작성이 되어있다면  
-   
-2. 비즈니스 코드를 DB연결 없이 테스트가 가능합니다.  
-
+2. 트랜잭션 스크립트 패턴처럼 절차지향적으로 작성이 되어있다면  
+비즈니스 코드를 DB연결 없이 테스트가 가능합니다.  
+[예시코드](https://github.com/kamser0415/study-jpa/blob/main/active-1/domain-development2.md#2-%ED%8A%B8%EB%9E%9C%EC%9E%AD%EC%85%98-%EC%8A%A4%ED%81%AC%EB%A6%BD%ED%8A%B8-%ED%8C%A8%ED%84%B4-vs-%EB%8F%84%EB%A9%94%EC%9D%B8-%EB%AA%A8%EB%8D%B8-%ED%8C%A8%ED%84%B4-%EC%B0%A8%EC%9D%B4)
 
 ## 단반향 연관관계  
 <div style="text-align: center;"><img src = "./image/mapping-1.png" width = "500" height = "100%"></div>  
