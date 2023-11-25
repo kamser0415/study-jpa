@@ -1,4 +1,4 @@
-# 일대다(1:N)  
+# 일대다 [1:N] 연관관계 매핑
 <div style="text-align: center;"><img src = "image/oneToMany.png" width = "500" height = "100%"></div>  
   
 일대다 관계는 다대일 관계의 반대 방향입니다. 일대다 관계는 엔티티를 하나 이상 참조할 수 있으므로 자바 컬렉션인 
@@ -156,6 +156,39 @@ remove를 해서 연관관계 엔티티끼리 동기화를 해야하는 게 맞�
 하지만 실용적인 관점에서는 삭제한 이후에 삭제한 객체를 활용하는 로직이 대부분 없고 
 delete라는 행위가 거의 없기 때문입니다. 데이터에 관한 이력을 다 남겨두어야 하기 때문이죠  
 
+### SELF JOIN을 엔티티로 나타내기
+```sql
+create table Category (
+  id bigint not null,
+  name varchar(255),
+  parent_id bigint,
+  primary key (id)
+)
+```
+이런 유형의 테이블 관계는 보통 재귀적인 구조를 나타내거나 조직도, 계층 구조, 카테고리 분류 등과 같은 데이터를 표현하는 데 사용됩니다.  
+대표적인 계층구조는 사원-매니저,댓글-댓글 구조로 나타낼 수있고 여기 예제처럼 카테고리 안에 카테고리로 표현할 수 있습니다.  
+테이블로 보면 이해가 되는 코드인데 엔티티로 표현하면 어렵습니다.  
+```sql
+@Entity
+public class Category {
+    @Id @GeneratedValue
+    private Long id;
+    private String name;
+    
+    @ManyToOne
+    private Category parent;
+    //아래 필드는 테이블 칼럼이 존재하지 않습니다 (mappedBY)
+    @OneToMany(mappedBy = "parent")
+    private List<Category> child = new ArrayList<>();
+```
+여기서 `mappedBy`를 지운다고 해서 칼럼이 추가되지 않습니다. 
+엔티티는 테이블을 객체로 사용하기 위해 DB에 있는 테이블과 매핑을 한 것이고, 
+테이블의 칼럼(속성)은 단일 값을 가지고 있어야 하기 때문이죠.
 
+연관 관계에 따라 테이블 스키마가 변경되는 것은 `@JoinColumn`, `@JoinTable `등 
+다른 매핑 설정들을 통해 이뤄집니다. 
+mappedBy는 단지 연관 관계의 **반대쪽에서 해당 필드를 매핑하는 데 사용**됩니다.
 
-
+즉, mappedBy를 삭제한다고 해서 데이터베이스 테이블의 컬럼이 
+추가되거나 변경되는 것은 아닙니다. 그러나 이를 삭제하면 JPA가 엔티티 간 관계를 
+어떻게 해석하는지가 변경될 수 있으므로 주의해야 합니다.

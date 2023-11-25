@@ -203,6 +203,21 @@ private Team team;
 | foreignKey(DDL)                                                 | 외래키 제약조건을 직접 지정할 수 있다.<br/>이 속성은 테이블을 생성할 때만 사용한다. |                         |
 | unique,nullable,insertable<br/>updatable,columnDefinition,table | @Column의 속성과 같다                                    |                         |
 
++ referencedColumnName 사용 방법: 
+  @JoinColumn을 할때 외래키가 참조하는 대상의 칼럼명이 달라질 수 있습니다. 그런 경우에 이 옵션을 사용합니다. 
+  이 옵션을 사용하지 않는다면 참조하는 테이블의 기본키 칼럼명이 됩니다. 복잡할 경우 옵션을 사용해서 사용할 때가 있습니다. 
+  ```java
+  TableA
+  id int identity
+  tableb_key varchar
+ 
+  TableB
+  id int identity
+  key varchar unique 
+  // in class for TableA
+  @JoinColumn(name="tableb_key", referencedColumnName="key")
+  ```
+
 #### `@JoinColumn` 생략  
 `@JoinColumn`을 생략하면 외래 키를 찾을 때 기본 전략을 사용합니다.  
 ```java
