@@ -19,8 +19,14 @@
 + [일대일](https://github.com/kamser0415/study-jpa/blob/main/base/ch6/oneToOne.md)
 + [일대다](https://github.com/kamser0415/study-jpa/blob/main/base/ch6/oneToMany.md)
 + [다대다](https://github.com/kamser0415/study-jpa/blob/main/base/ch6/manyToMany.md)
-+ [복합키]()
-
-
+  
+#### 고급매핑
++ [상속 매핑](https://github.com/kamser0415/study-jpa/blob/main/base/ch7/inheritance.md)
++ [MappedSupperClass](https://github.com/kamser0415/study-jpa/blob/main/base/ch7/MappedSuperClass.md)
++ [복합키+식별/비식별 관계 매핑](https://github.com/kamser0415/study-jpa/blob/main/base/ch7/CompositeKey.md)
+#### 프록시와 연관관계 정리
++ [프록시와 연관관계](https://github.com/kamser0415/study-jpa/blob/main/base/ch8/proxy.md)
++ [즉시로딩과 지연로딩](https://github.com/kamser0415/study-jpa/blob/main/base/ch8/lazy.md)
++ [영속성 전이와 고아객체](https://github.com/kamser0415/study-jpa/blob/main/base/ch8/cascade.md)
 ## 외래키 주의사항
 + [외래키 MySQL](https://github.com/kamser0415/study-jpa/blob/main/base/referencekey.md)
