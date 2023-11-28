@@ -217,3 +217,11 @@ Hibernate:
 
 **따라서 영속성 전이는 단방향으로 설정해야합니다.**  
   
+### orphanRemoval는 CASCADE에 의존적입니다.  
+사실은 orphanRemoval와 cascade는 별개로 분류해야할거같지만, 
+JPA에서는 cascade.ALL OR cascade.PERSIST 일 경우에만 orphanRemoval가 적용됩니다.
+[참고링크](https://github.com/jyami-kim/Jyami-Java-Lab/issues/1)
+orphanRemoval만 true일 경우 제거되지 않습니다.
+```sql
+
+```
