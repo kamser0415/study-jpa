@@ -127,3 +127,143 @@ void t5(){
     //이상혁,캐리아
 }
 ```
+
+## 경로 표현식
+JPQL에서 사용하는 경로 표현식(`pathExpresstion`)과 경로 표현식을 사용하면 발생하는 묵시적 조인도 알아보겠습니다.  
+  
+```Java
+select m.username // 1 상태 필드
+from Member as m
+    join m.team as t // 2 단일 값 연관 필드
+    join m.orders as o // 3 컬렉션 값 연관 필드
+where t.name = 'T1'
+```   
+### 경로 표현식의 용어정리
++ 상태 필드(state ﬁeld): 단순히 값을 저장하기 위한 필드 (ex: m.username)
++ 연관 필드(association ﬁeld): 연관관계를 위한 필드
++  단일 값 연관 필드: 대상이 엔티티(ex: m.team)  
+`@ManyToOne`, `@OneToOne`
++  컬렉션 값 연관 필드: 대상이 컬렉션(ex: m.orders)  
+`@OneToMany`, `@ManyToMany`,   
+```Java
+@Getter @Entity @Setter
+public class Member {
+    @Id @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    private Long id;         // 상태필드 (프로퍼티)
+    private String username; // 상태필드 (프로퍼티)
+
+    @OneToMany(mappedBy = "member") // 컬렉션 값 연관필드
+    private List<MemberProduct> memberProducts = new ArrayList<>();
+    
+    @JoinColumn(name = "team_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Team team;      // 단일 값 연관필드
+}
+```
+**_경로 표현식에 따라서 내부 동작 방식이 다릅니다._**  
+**_세가지를 구분해서 사용할 줄 알아야합니다._**  
+  
+### 경로 표현식과 특징   
++ 상태 필드(state ﬁeld): 경로 탐색의 끝, 탐색할 수 없다.
++ 단일 값 연관 경로: 묵시적 내부 조인(inner join) 발생, 단일 값 연관 경로는 계속 탐색할 수 있다.  
+    예) `select m.address.addressAlias.addressName from Member as m`
++ 컬렉션 값 연관 경로: 묵시적 내부 조인 발생, 더이상 탐색할 수 없습니다.
+  + FROM 절에서 명시적 조인을 통해 별칭을 얻으면 별칭을 통해 탐색 가능  
+`하이버네이트 6에서는 element(),key(),index()등으로 탐색 가능하다고 합니다.`  
+  
+### 묵시적 조인 사용하기
++ 엔티티 전체 코드입니다.
+```java
+@Entity
+public class AddressAlias {
+    @Id
+    @GeneratedValue
+    private Long id;
+    private String addressName;
+}
+@Embeddable @Getter @Setter
+public class Address {
+
+    private String city;
+    private String street;
+    private String zipcode;
+
+    @ManyToOne
+    private AddressAlias addressAlias;
+}  
+Entity @Getter @Setter
+public class Member {
+
+    @Id @GeneratedValue
+    private Long id;
+    
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "team_id")
+    private Team team;
+
+    @Embedded
+    private Address address;
+}
+```
+
+#### 1. 선수의 집 주소의 별명을 조회해보기
++ 테스트 코드
+```java
+@DisplayName("경로 탐색은 어떤 쿼리가 실행될까")
+@Test
+void t1(){
+
+    Team t1 = new Team();
+    t1.setName("T1");
+    em.persist(t1);
+
+    AddressAlias addressAlias = new AddressAlias();
+    addressAlias.setAddressName("우리집");
+    em.persist(addressAlias);
+    //별칭 저장
+    Address address = new Address("서울시", "마포구", "노고산동");
+    address.setAddressAlias(addressAlias);
+    //선수 저장
+    Member member = new Member();
+    member.setUsername("이상혁");
+    member.resigned(t1);
+
+    member.setAddress(address);
+    em.persist(member);
+    //초기화
+    em.flush();
+    em.clear();
+        
+    String sql = "select m.address.addressAlias.addressName from Member as m";
+    String memberAddress = em.createQuery(sql, String.class).getSingleResult();
+    System.out.println("memberAddress = " + memberAddress);
+}
+```   
+임베디드 타입 내에 엔티티 연관관계도 탐색해서 조회가 가능합니다. 
+그러면 이 테스트를 실행하면 JPA는 내부 조인을 사용할까요 ?
+```sql
+select
+    al.addressName as `name`
+from Member m
+cross join AddressAlias al
+where m.addressAlias_id=al.id
+```  
+동작 방식은 크로스 조인이 동작합니다.  
+그러면 만약 명시적 조인으로 변경했다면 어떻게 될까요?  
+
+```java
+//           "select m.address.addressAlias.addressName from Member as m"
+String sql = "select al.addressName from Member as m join m.address.addressAlias as al";
+String memberAddress = em.createQuery(sql, String.class).getSingleResult();
+```
+```sql
+select
+    al.addressName as `name`
+from Member m 
+inner join AddressAlias al on m.addressAlias_id=al.id
+```  
+쿼리의 성능의 여부를 떠나서 실행해보기 전까지는 묵시적 조인은 어떤 SQL이 실행될지 모른다는게 단점입니다.  
+  
+조인이 성능상 차지하는 부분이 크기때문에 묵시적 조인은 일어나는 상황을 한눈에 파악하기 어렵습니다. 
+따라서 단순한 경우에는 상관이 없을 수 있지만, 성능이 중요하다면 분석하기 쉽도록 묵시적 조인보다는 
+명시적인 조인을 활용해야합니다.  
