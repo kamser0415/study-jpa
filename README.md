@@ -1,7 +1,15 @@
 # 스프링 부트 JPA 스터디
-## 실전! 스프링 부트와 JPA 활용1
+## 실전! 스프링 부트와 JPA 활용 1
 + [회원 도메인까지 - 상편](https://github.com/kamser0415/study-jpa/blob/main/active-1/domain-development.md)
 + [상품부터 마지막까지 - 하편](https://github.com/kamser0415/study-jpa/blob/main/active-1/domain-development2.md)
+
+## 실전! 스프링 부트와 JPA 활용 2
++ [API 패지키가 추가되는 이유](https://github.com/kamser0415/study-jpa/blob/main/active-2/sc1_api_base.md#%EC%9A%94%EC%B2%AD%EC%9D%91%EB%8B%B5%EC%9D%84-entity%EB%A5%BC-%EC%82%AC%EC%9A%A9%ED%95%A0-%EA%B2%BD%EC%9A%B0)
++ [PostContruct가 Transaction이 적용 안되는 이유](https://github.com/kamser0415/study-jpa/blob/main/active-2/sc2_init.md)
++ [쿼리 성능 최적화-1:1,N:1 관계](https://github.com/kamser0415/study-jpa/blob/main/active-2/sc3_optimizer.md)
++ [쿼리 성능 최적화-N:1 관계](https://github.com/kamser0415/study-jpa/blob/main/active-2/sc4_optimizer_collection.md)
++ [쿼리 성능 최적화-인스턴스(DTO)활용](https://github.com/kamser0415/study-jpa/blob/main/active-2/sc5_optimizer_collection_dto.md)
++ [OSIV - 엔티티매니저 인터셉터 활용](https://github.com/kamser0415/study-jpa/blob/main/active-2/sc6_osiv.md)
 
 ## JPA 기본편
 
