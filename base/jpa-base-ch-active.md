@@ -1,4 +1,20 @@
-# 실전 예제 1 - 요구사항 분석과 기본 매핑  
+# 실전 예제 1 - 요구사항 분석과 기본 매핑    
+<!-- TOC -->
+* [실전 예제 1 - 요구사항 분석과 기본 매핑](#실전-예제-1---요구사항-분석과-기본-매핑-)
+      * [gradle](#gradle)
+      * [resources/META-INF/persistence.xml](#resourcesmeta-infpersistencexml-)
+    * [요구사항 분석](#요구사항-분석-)
+    * [기능 목록](#기능-목록)
+    * [도메인 설계](#도메인-설계-)
+    * [테이블 설계](#테이블-설계-)
+    * [엔티티 설계](#엔티티-설계-)
+      * [Member Entity](#member-entity)
+      * [Order](#order-)
+      * [OrderItem](#orderitem)
+      * [Item](#item)
+      * [main](#main-)
+    * [데이터 중심 설계의 문제점](#데이터-중심-설계의-문제점-)
+<!-- TOC -->
 <div style="text-align: center;"><img src = "./image/init.png" width = "600" height = "100%"></div>  
 프로젝트 생성 방법  
   

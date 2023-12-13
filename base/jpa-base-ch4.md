@@ -1,4 +1,24 @@
-# 엔티티 매핑
+# 엔티티 매핑  
+<!-- TOC -->
+* [엔티티 매핑](#엔티티-매핑-)
+    * [목차](#목차)
+  * [객체와 테이블 매핑](#객체와-테이블-매핑-)
+    * [엔티티 매핑 소개](#엔티티-매핑-소개-)
+    * [@Entity](#entity-)
+      * [@Entity 속성 정리](#entity-속성-정리-)
+    * [데이터베이스 스키마 자동 생성](#데이터베이스-스키마-자동-생성-)
+      * [스키마 자동 생성 - 주의](#스키마-자동-생성---주의-)
+      * [DDL 생성 기능](#ddl-생성-기능)
+  * [필드와 컬럼 매핑](#필드와-컬럼-매핑-)
+      * [insertable,updateable](#insertableupdateable-)
+      * [nullable(중요)](#nullable중요-)
+      * [unique(사용 안함)](#unique사용-안함-)
+      * [length](#length-)
+      * [columnDefinition](#columndefinition-)
+      * [enum 타입사용시 옵션 주의사항](#enum-타입사용시-옵션-주의사항-)
+      * [Temporal](#temporal-)
+      * [Lob](#lob-)
+<!-- TOC -->
 
 JPA에서 제일 중요하게 봐야하는 두가지는
 1. **영속성 컨택스트**  

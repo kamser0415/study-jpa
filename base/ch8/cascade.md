@@ -1,4 +1,12 @@
-# 영속성 전이 : CASCADE  
+# 영속성 전이 : CASCADE   
+<!-- TOC -->
+* [영속성 전이 : CASCADE](#영속성-전이--cascade-)
+  * [영속성 전이: CASCADE - 주의](#영속성-전이-cascade---주의-)
+    * [CASCADE의 종류](#cascade의-종류)
+      * [cascade.REMOVE](#cascaderemove-)
+  * [orphanRemoval 고아 객체](#orphanremoval-고아-객체-)
+    * [orphanRemoval는 CASCADE에 의존적입니다.](#orphanremoval는-cascade에-의존적입니다-)
+<!-- TOC -->
 
 자식 엔터티의 라이프사이클이 종종 어떤 **_부모의 라이프사이클에 완전히 의존하는 경우_** 가 많습니다. 
 특히 **_다대일_** 및 **_일대일_** 관계에서 이는 매우 흔한데, 다대다 관계에서는 매우 드뭅니다.

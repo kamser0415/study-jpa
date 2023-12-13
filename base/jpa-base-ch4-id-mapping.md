@@ -1,4 +1,17 @@
 # 기본키 매핑  
+<!-- TOC -->
+* [기본키 매핑](#기본키-매핑-)
+    * [기본 키 매핑 어노테이션](#기본-키-매핑-어노테이션-)
+    * [기본 키 매핑 방법](#기본-키-매핑-방법-)
+      * [@GeneratedValue(strategy = GenerationType.AUTO)](#generatedvaluestrategy--generationtypeauto-)
+    * [IDENTITY 전략 - 특징](#identity-전략---특징-)
+    * [SEQUENCE - 전략 - 특징](#sequence---전략---특징-)
+      * [사용자 정의 시퀀스](#사용자-정의-시퀀스-)
+      * [Sequence 전략으로 최적화하기](#sequence-전략으로-최적화하기-)
+      * [call next value for Sequence 2번 호출하는 이유](#call-next-value-for-sequence-2번-호출하는-이유-)
+    * [Table 전략](#table-전략)
+    * [권장하는 식별자 전략](#권장하는-식별자-전략-)
+<!-- TOC -->
 엔티티 코드
 ```java
 @Entity

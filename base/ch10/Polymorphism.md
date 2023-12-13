@@ -2,7 +2,12 @@
 <div style="text-align: center;"><img src = "image/poly.png" width = "500" height = "100%"></div>  
   
 [공식문서 링크](https://docs.jboss.org/hibernate/orm/6.4/querylanguage/html_single/Hibernate_Query_Language.html#functions-typecasts)  
-
+<!-- TOC -->
+* [다형성 쿼리](#다형성-쿼리)
+  * [TYPE](#type)
+  * [TREAT(JPA 2.1)](#treatjpa-21)
+    * [정리](#정리)
+<!-- TOC -->
 ## TYPE
 
 엔티티 타입을 평가하는 함수인 `type()`은 식별 변수에 적용되며, **참조된 엔티티의 엔티티 이름을 평가합니다**. 이는 주로 엔티티 상속 계층 구조를 다룰 때 유용합니다.  

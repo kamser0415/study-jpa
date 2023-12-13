@@ -1,4 +1,7 @@
-# `@MappedSupperClass`
+# `@MappedSupperClass`  
+<!-- TOC -->
+* [`@MappedSupperClass`](#mappedsupperclass-)
+<!-- TOC -->
 상속 관계 매핑 클래스와 다르게 부모 클래스는 엔티티로 관리하지 않고 `상속 받은`자식 클래스에게 
 **_매핑 정보만 제공_** 하고 싶을 때 사용하는 애노테이션입니다.  
 <div style="text-align: center;"><img src = "image/supper.png" width = "700" height = "100%"></div>  

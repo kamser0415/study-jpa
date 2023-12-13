@@ -1,6 +1,16 @@
 # JPQL 기초  
 + 하이버네이트 공식 HQL 문서 [링크](https://docs.jboss.org/hibernate/orm/6.4/querylanguage/html_single/Hibernate_Query_Language.html)  
-  
+  <!-- TOC -->
+* [JPQL 기초](#jpql-기초-)
+      * [SQL](#sql)
+      * [HQL(JPQL 하이버네이트 버전)](#hqljpql-하이버네이트-버전-)
+    * [TypeQuery,Query](#typequeryquery-)
+    * [결과값 조회](#결과값-조회)
+    * [파라미터 바인딩](#파라미터-바인딩)
+      * [파라미터 바인딩 필수](#파라미터-바인딩-필수-)
+    * [프로젝션](#프로젝션-)
+  * [페이징 API](#페이징-api-)
+<!-- TOC -->
 
 #### SQL
 ```sql

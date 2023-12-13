@@ -1,8 +1,23 @@
 # 쿼리 성능 최적화
 이번 장에서는 지연로딩 및 즉시로딩으로 발생할 수 있는 문제를 
-단계별로 해결하는 방법을 이해하는 것입니다.  
+단계별로 해결하는 방법을 이해하는 것입니다.    
 
-## V1 Entity 그대로 사용하기  
+<!-- TOC -->
+* [쿼리 성능 최적화](#쿼리-성능-최적화)
+  * [Ver.1 Entity 그대로 사용하기](#ver1-entity-그대로-사용하기-)
+    * [발생하는 문제](#발생하는-문제)
+      * [java.lang.StackOverflowError: null](#javalangstackoverflowerror-null-)
+      * [ByteBuddyInterceptor](#bytebuddyinterceptor)
+  * [지연로딩 및 즉시로딩 N+1 발생문제](#지연로딩-및-즉시로딩-n1-발생문제-)
+  * [fetch join 사용하기](#fetch-join-사용하기-)
+    * [fetch 와 DTO](#fetch-와-dto-)
+      * [트레이드오프](#트레이드오프-)
+      * [DTO 주의사항](#dto-주의사항-)
+  * [정리](#정리)
+    * [쿼리 방식 선택 권장 순서](#쿼리-방식-선택-권장-순서)
+<!-- TOC -->
+
+## Ver.1 Entity 그대로 사용하기  
 + **Entity**
     ```Java
     public class Order {
@@ -29,6 +44,12 @@
         return all;
     }
     ```  
+    ```Java
+    public List<Order> findAll() {
+        return em.createQuery("select o from Order o", Order.class)
+                .getResultList();
+    }
+    ```
   
 ### 발생하는 문제
 #### java.lang.StackOverflowError: null  
