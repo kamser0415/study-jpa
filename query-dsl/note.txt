@@ -1,0 +1,45 @@
+API-JPA 코드 제너레이터를 만들기 위해 사용하는 라이브러리 - QHello을 만드는 용도로 사용
+
+JPA는 실제 quarydsl core가 내부에 있음
+select from 같은 애플리케이션에서 만들기위한 라이브러리
+
+//querydsl 추가 시작
+def querydslDir = "$buildDir/generated/querydsl"
+
+querydsl {
+    jpa = true
+    querydslSourcesDir = querydslDir
+}
+sourceSets {
+    main.java.srcDir querydslDir
+}
+configurations {
+    querydsl.extendsFrom compileClasspath
+}
+compileQuerydsl {
+    options.annotationProcessorPath = configurations.querydsl
+}
+//querydsl 추가 끝
+
+
+장단점
+
+변수명은 크게 중요하지 않다.
+
+필드레벨로 가져가도 상관없습니다.
+이유는 스프링이 em를 주입할 때 트랜잭션을 확인하고 거기에 맞춰서 주입해주기 때문에 동시성 문제는 발생하지 않게 설계가 되어있다
+
+use_sql_comment;
+
+alias를 변경할 수 있습니다. 해당 엔티티의 alias를 설정한다.
+같은 테이블을 조인해야할때 사용한다.
+
+복잡한 페이징 쿼리를 실행할때에는 두번 쿼리를 실행하는게 낫다.
+
+
+세타조인
+
+select m from Member as m , Team as t on t.name='teamA'
+
+서브쿼리 주의할점
+한계점이 있다 FROM절에 서브쿼리가 안된다.
