@@ -51,3 +51,26 @@
 + [벌크 연산](https://github.com/kamser0415/study-jpa/blob/main/base/ch10/bulk.md)
 #### 외래키 주의사항
 + [외래키 MySQL](https://github.com/kamser0415/study-jpa/blob/main/base/referencekey.md)
+
+## Spring Data JPA
+#### 환경설정
++ [라이브러리 설정 및 의존관계](https://github.com/kamser0415/study-jpa/blob/main/data-jpa/section1_enviroment/dependencies.md)
++ [파라미터 로그 남기기](https://github.com/https://github.com/kamser0415/study-jpa/blob/main/data-jpa/section1_enviroment/query_parameter.md/study-jpa/blob/main/data-jpa/section1_enviroment/dependencies.md)  
+
+#### 스프링 DataJPA 기본
++ [공용 인터페이스 설정](https://github.com/kamser0415/study-jpa/blob/main/data-jpa/section3_share_interface/ch1_share.md)
++ [공통 인터페이스 사용 방법](https://github.com/kamser0415/study-jpa/blob/main/data-jpa/section3_share_interface/ch2_use_data_jpa.md)
++ [페이징과 정렬](https://github.com/kamser0415/study-jpa/blob/main/data-jpa/section3_share_interface/ch3_paging.md)
++ [벌크 수정 및 삭제](https://github.com/kamser0415/study-jpa/blob/main/data-jpa/section3_share_interface/ch4_bulk.md)
++ [엔티티 그래프 활용](https://github.com/kamser0415/study-jpa/blob/main/data-jpa/section3_share_interface/ch5_entitygraph.md)
++ [JPA 힌트와 락](https://github.com/kamser0415/study-jpa/blob/main/data-jpa/section3_share_interface/ch6_hintAndLock.md)
+
+#### 스프링 Data JPA 확장
++ [사용자 정의 인터페이스](https://github.com/kamser0415/study-jpa/blob/main/data-jpa/section4_extenstion/ch1_user_interface.md)
++ [Auditing](https://github.com/kamser0415/study-jpa/blob/main/data-jpa/section4_extenstion/ch2_auditing.md)
++ [web 확장](https://github.com/kamser0415/study-jpa/blob/main/data-jpa/section4_extenstion/ch3_web.md)
++ [Data JPA 구현체 분석](https://github.com/kamser0415/study-jpa/blob/main/data-jpa/section4_extenstion/ch4_entity.md)
++ [specifications](https://github.com/kamser0415/study-jpa/blob/main/data-jpa/section4_extenstion/ch5_specifications.md)
++ [QueryByExample](https://github.com/kamser0415/study-jpa/blob/main/data-jpa/section4_extenstion/ch6_query_by_example.md)
++ [Projection](https://github.com/kamser0415/study-jpa/blob/main/data-jpa/section4_extenstion/ch7_projections.md)
++ [Native](https://github.com/kamser0415/study-jpa/blob/main/data-jpa/section4_extenstion/ch8_native.md)
