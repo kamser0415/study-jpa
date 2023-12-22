@@ -50,3 +50,4 @@ queryDsl 선택사항
     ㄴ 테스토크두 불편
 2. 생성자 만들때 new QueryFactory(em)으로 받기
     ㄴ 테스트코드가 간편
+
