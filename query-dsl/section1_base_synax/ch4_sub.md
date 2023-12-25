@@ -1,6 +1,8 @@
 # 서브쿼리
 + `com.querydsl.jpa.JPAExpressions `을 사용합니다.  
-
+유틸성 클래스로 다양한 `select` 메서드 지원과 사용 범위가 서브쿼리에 맞춰져 있습니다.  
+> 공식문서:  
+서브쿼리를 생성하기 위해선 JPAExpressions의 정적 팩토리 메서드를 사용하고, from, where 등을 통해 쿼리 파라미터를 정의합니다.
 ### 서브쿼리의 eq 사용
 #### 비상관 서브쿼리
 ```Java
