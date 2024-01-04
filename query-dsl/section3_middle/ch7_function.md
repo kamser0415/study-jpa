@@ -1,5 +1,5 @@
 # SQL function 호출하기  
-SQL function은 JPA와 같이 Dialect에 등록된 내용만 호출할 수 있습니다.
+SQL function은 JPA와 같이 `Dialect`에 등록된 내용만 호출할 수 있습니다.
 ### ANSI 표준 함수
 `com.querydsl.core.types.dsl.StringExpression`을 참조하면 됩니다.  
 기본적인 표준 함수는 queryDsl이 내장하고 있습니다.

@@ -47,6 +47,7 @@ where
 메소드 체이닝으로 `A.or(B)`형식으로 사용할 수 있지만 A에서 `NULL`이 반환된다면 예외가 발생합니다.
 ```Java
 private BooleanExpression allCondEx(String username,Integer age) {
+    //if(username == null) throw Exception
     return usernameEq(username).or(ageEq(age));
 }
 ```  

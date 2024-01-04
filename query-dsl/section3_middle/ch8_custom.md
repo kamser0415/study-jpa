@@ -1,4 +1,4 @@
-# 이영한님 코드
+# 김영한님 코드
 ```Java
 public class Querydsl4RepositorySupport {
     private final Class domainClass;

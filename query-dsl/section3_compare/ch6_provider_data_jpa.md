@@ -31,10 +31,12 @@ public MemberDto findAll(MemberSearchCond cond){
 ```  
 #### 한계점  
 1. `QuerydslPredicateExecutor`에 정의한 엔티티를 기준으로 묵시적 조인만 가능합니다.  
-    **left join**이 불가능 합니다.
+    + 묵시적 조인은 `cross join`이 발생합니다.  
+    + **left join**이 불가능 합니다.
     + 테이블 하나로 할수 있는 기능이 거의 없습니다.
 2. 클라이언트가 QueryDSL에 의존해야합니다.  
     단) 아래 코드와 같이 인터페이스로 분리할 경우 가능합니다.
+  
 
 #### 레파지토리 구현체 생성
 ```Java
@@ -101,6 +103,7 @@ public class MemberServiceQuery {
 구조로 만들면 서비스 계층에서는 QueryDSL을 사용하지 않아도 되지만, 
 막상 코드로 작성해보니 묵시적 조인만 사용가능한 쿼리에 불필요한 작업이 많아져서 
 실무에서는 사용을 잘 안할 거같습니다.  
+**이렇게 사용하는것고 일반 QueryDSL 문법을 사용하는게 차이가 없습니다.**
   
 서비스 계층에 QueryDSL이 들어와도 상관 없다면 
 단일 테이블 조회는 편리하게 사용할 수 있습니다.

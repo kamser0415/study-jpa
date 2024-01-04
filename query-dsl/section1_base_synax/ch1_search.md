@@ -84,7 +84,7 @@ member.username.startsWith("member") //like ‘member%’ 검색
 #### fetchOne()
 + 단건조회
 + 결과가 없으면 : `null`
-+ 결과가 둘 이상이면 : `com.querydsl.core.NonUniqueResultException`
++ 결과가 둘 이상이면 : `com.querydsl.core.NonUniqueResultException`  
 ```Java
 @DisplayName("단건 조회하지만 결과가 여러개라면")
 @Test
@@ -100,6 +100,8 @@ void s1() {
 ```
 #### fetchFirst()
 + `limit(1).fetchOne()`
++ `SELECT EXISTS(SELECT 1 FROM tableA WHERE ...)`과 유사하게 사용가능합니다.
++ 데이터 유/무를 확인하기에 최적화된 문법입니다.
 ```Java
 @DisplayName("가장 먼저 조회되는 엔티티 반환")
 @Test
@@ -129,7 +131,11 @@ limit
 ```
 
 #### fetchResult,fetchCount는 사용금지
-javaDoc에는 fetchCount를 fetch().size() 사용하라고 작성되어있지만
+javaDoc에는 `fetchCount()` 대신에 `fetch().size()` 사용하라고 작성되어있지만 사용하면 안됩니다.  
+> 이유는 전체 데이터를 불러오고 나서 size()로 구하는 방식은 영속성 컨텍스트에 데이터를 전부 받아온 뒤에 개수를 따로 세는 것이기 때문에 불필요하게 메모리를 잡아먹기 때문입니다.
+> 만약 서버 메모리가 부족할 경우 서버가 죽을수 있습니다.  
+> `다대일 페이징을 하듯이 메모리에 쿼리결과의 갯수를 계산합니다.`
+
 ```Java
 @DisplayName("가장 먼저 조회되는 엔티티 반환")
 @Test
@@ -154,7 +160,3 @@ from
 where
     m1_0.username like ? escape '!'
 ```  
-> 절대 `size()`는 사용하면 안됩니다.
-> 이유는 전체 데이터를 불러오고 나서 size()로 구하는 방식은 영속성 컨텍스트에 데이터를 전부 받아온 뒤에 개수를 따로 세는 것이기 때문에 불필요하게 메모리를 잡아먹기 때문입니다.
-> 만약 서버 메모리가 부족할 경우 서버가 죽을수 있습니다.
->

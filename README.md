@@ -77,7 +77,7 @@
   
 ## QueryDSL
 ### section 1
-+ [QueryDSL 환경 설정 방법](https://github.com/kamser0415/study-jpa/blob/main/query-dsl/section1_base_synax/ch0_base.md)
++ [QueryDSL 환경 설정 및 기본 문법](https://github.com/kamser0415/study-jpa/blob/main/query-dsl/section1_base_synax/ch0_base.md)
 + [검색 조건 쿼리](https://github.com/kamser0415/study-jpa/blob/main/query-dsl/section1_base_synax/ch1_search.md)
 + [정렬과 페이징](https://github.com/kamser0415/study-jpa/blob/main/query-dsl/section1_base_synax/ch2_pagingAndSort.md)
 + [조인-기본 조인](https://github.com/kamser0415/study-jpa/blob/main/query-dsl/section1_base_synax/ch3_join.md)
@@ -89,7 +89,7 @@
 ### section 2
 + [QueryDSL 빈 등록 방법](https://github.com/kamser0415/study-jpa/blob/main/query-dsl/section3_compare/ch1_base.md)
 + [동적 쿼리와 성능 최적화 조회](https://github.com/kamser0415/study-jpa/blob/main/query-dsl/section3_compare/ch2_optimizer.md)
-+ [조회 API 컨트롤러 개발](https://github.com/kamser0415/study-jpa/blob/main/query-dsl/section3_compare/ch3_api.md)
++ [조회 API 컨트롤러 개발](https://github.com/kamser0415/study-jpa/blob/main/query-dsl/section3_compare/ch3_api.md)2
 + [스프링 DataJPA와 QueryDSL](https://github.com/kamser0415/study-jpa/blob/main/query-dsl/section3_compare/ch4_user_interface.md)
 + [스프링 데이터 페이징 활용 1 - Query 페이징 연동](https://github.com/kamser0415/study-jpa/blob/main/query-dsl/section3_compare/ch5_query_paging.md)
 + [스프링 데이터에서 제공하는 기능](https://github.com/kamser0415/study-jpa/blob/main/query-dsl/section3_compare/ch6_provider_data_jpa.md)

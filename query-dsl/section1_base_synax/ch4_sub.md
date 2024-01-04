@@ -46,8 +46,11 @@ where
     )
 ```  
 ### 상관서브쿼리
-외부 테이블의 칼럼값을 서브쿼리에서 의존하는 방식
-```Java
+외부 테이블의 칼럼값을 서브쿼리에서 의존하는 방식  
+`JPAExpressions`를 활용해서 서브쿼리를 만들수 있습니다  
++ 서브쿼리는 다양한 기능이 있는 `JPAExprssioins`를 활용합니다.
+```
+Java`JPAExpressions ㅜ
 queryFactory.selectFrom(member)
                 .where(member.age.eq(
                         JPAExpressions

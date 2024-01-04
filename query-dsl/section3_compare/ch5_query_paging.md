@@ -41,56 +41,58 @@ public Page<MemberTeamDto> searchPageSimple(MemberSearchCondition condition, Pag
 ```  
 + 간단한 코드는 상관없지만, 연관관계가 아닌 엔티티와 조인할 경우 
     조회쿼리가 불필요하게 복잡해집니다.
-```Java
- leftJoin(post).on(member.id.eq(post.id))
-```
-```SQL
-select
-    count(m1_0.member_id) 
-from
-    member m1_0 
-left join
-    post p1_0 
-        on m1_0.member_id=p1_0.id
-```  
+  ```Java
+   leftJoin(post).on(member.id.eq(post.id))
+  ```
+  ```SQL
+  select
+      count(m1_0.member_id) 
+  from
+      member m1_0 
+  left join
+      post p1_0 
+          on m1_0.member_id=p1_0.id
+  ```  
 + Querydsl이 제공하는 `fetchResults()` 를 사용하면 내용과 전체 카운트를 한번에 조회할 수 있다.(실제 쿼리
   는 2번 호출)
 + `fetchResults()`는 카운스 쿼리 실행시 필요없는 `ORDER BY`는 제거합니다.  
   
 #### 데이터 내용과 전체 카운트를 별도로 조회하는 방법  
 + `fetchCount()` 대신에 `fetchOne()`을 사용합니다.
-```Java
-@Override
-public Page<MemberTeamDto> searchPageComplex(MemberSearchCondition condition,
-                                             Pageable pageable) {
-    List<MemberTeamDto> content = factory
-            .select(new QMemberTeamDto(
-                    member.id,
-                    member.username,
-                    member.age,
-                    team.id,
-                    team.name))
-            .from(member)
-            .leftJoin(member.team, team)
-            .where(usernameEq(condition.getUsername()),
-                    teamNameEq(condition.getTeamName()),
-                    ageGoe(condition.getAgeGoe()),
-                    ageLoe(condition.getAgeLoe()))
-            .offset(pageable.getOffset())
-            .limit(pageable.getPageSize())
-            .fetch();
-    Long total = factory
-            .select(member.count())
-            .from(member)
-            .leftJoin(member.team, team)
-            .where(usernameEq(condition.getUsername()),
-                    teamNameEq(condition.getTeamName()),
-                    ageGoe(condition.getAgeGoe()),
-                    ageLoe(condition.getAgeLoe()))
-            .fetchOne();
-    return new PageImpl<>(content, pageable, total);
-}
-```  
+  ```Java
+  @Override
+  public Page<MemberTeamDto> searchPageComplex(MemberSearchCondition condition,
+                                               Pageable pageable) {
+      List<MemberTeamDto> content = factory
+              .select(new QMemberTeamDto(
+                      member.id,
+                      member.username,
+                      member.age,
+                      team.id,
+                      team.name))
+              .from(member)
+              .leftJoin(member.team, team)
+              .where(usernameEq(condition.getUsername()),
+                      teamNameEq(condition.getTeamName()),
+                      ageGoe(condition.getAgeGoe()),
+                      ageLoe(condition.getAgeLoe()))
+              .offset(pageable.getOffset())
+              .limit(pageable.getPageSize())
+              .fetch();
+   //== 별도의 전체 Count 구하기
+      Long total = factory
+              .select(member.count())
+              .from(member)
+              .leftJoin(member.team, team)
+              .where(usernameEq(condition.getUsername()),
+                      teamNameEq(condition.getTeamName()),
+                      ageGoe(condition.getAgeGoe()),
+                      ageLoe(condition.getAgeLoe()))
+              .fetchOne();
+   //== fetchOne() 결과를 하나 가져옵니다.
+      return new PageImpl<>(content, pageable, total);
+  }
+  ```  
 + 전체 카운트를 조회하는 방법을 최적화 할 수 있으면 분리하는 것이 좋습니다.  
   (조인 테이블을 줄이기)
   
@@ -136,7 +138,7 @@ public Page<MemberTeamDto> searchPageComplex(MemberSearchCondition condition,
   + 마지막 페이지 일 때 (offset + 컨텐츠 사이즈를 더해서 전체 사이즈 구함, 더 정확히는 마지막 페이지이면
   서 컨텐츠 사이즈가 페이지 사이즈보다 작을 때)
   
-### API 예제코드
+### QueryDSL API 예제코드
 ```Java
 @RestController
 @RequiredArgsConstructor
@@ -217,7 +219,8 @@ new PathBuilder(member.getType(), member.getMetadata())
 > 참고:  
 > 위 방식으로 동작하는건 시작하는 엔티티 PathBuilder를 통해서 동적으로 Entity의 프로퍼티를 가져올 수 있습니다. 
 > 들어오는 값에 따라 분기를 태워서 정렬할 엔티티 기준을 세워도 동작을 잘 합니다.
-> 루트 엔티티 범위를 넘어서는 동적 정렬이 필요하다면 데이터 페이징 객체가 제공하는 Sort를 사용하기 보다는 파라미터를 직접 처리하는 방식을 권장합니다.
+> 루트 엔티티 범위를 넘어서는 동적 정렬이 필요하다면 데이터 페이징 객체가 제공하는 Sort를 사용하기 보다는 파라미터를 직접 처리하는 방식을 권장합니다.  
+ [10분 우테코 정리](https://github.com/kamser0415/study-jpa/blob/main/query-dsl/section4_beamin/ch1_techtolk.md)
   
 ```Java
 for (Sort.Order order : pageable.getSort()) {
